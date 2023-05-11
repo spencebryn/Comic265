@@ -1,0 +1,112 @@
+<%- include('../partials/header'); -%>
+
+<form>
+    <h2>Add A Comic</h2>
+
+    <label for="id">Comic ID</label>
+    <input type="number" name="id" required />
+    <div class="id error"></div>
+
+    <label for="title">Title</label>
+    <input type="text" name="title" required />
+    <div class="title error"></div>
+
+    <label for="price">Price</label>
+    <input type="number" name="price" required />
+    <div class="price error"></div>
+
+    <label for="brand">Brand</label>
+    <input type="text" name="brand" required />
+    <div class="brand error"></div>
+
+    <label for="publisher">Publisher</label>
+    <input type="text" name="publisher" required />
+    <div class="publisher error"></div>
+
+    <label for="artist">Artist</label>
+    <input type="text" name="artist" required />
+    <div class="artist error"></div>
+
+    <label for="coverArtist">Cover Artist</label>
+    <input type="text" name="coverArtist">
+    <div class="coverArtist error"></div>
+
+    <label for="writer">Writer</label>
+    <input type="text" name="writer" required />
+    <div class="writer error"></div>
+
+    <label for="inventoryAmount">Amount in Inventory</label>
+    <input type="int" name="inventoryAmount" required />
+    <div class="inventoryAmount error"></div>
+
+    <button>Add New Comic</button>
+</form>
+
+<script>
+    const form = document.querySelector('form');
+    const idError = document.querySelector('.id.error');
+    const titleError = document.querySelector('.title.error');
+    const priceError = document.querySelector('.price.error');
+    const brandError = document.querySelector('.brand.error');
+    const publisherError = document.querySelector('.publisher.error');
+    const artistError = document.querySelector('.artist.error');
+    const coverArtistError = document.querySelector('.coverArtist.error');
+    const writerError = document.querySelector('.writer.error');
+    const inventoryAmountError = document.querySelector('.inventoryAmount.error');
+    
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        //reset errors
+        idError.textContent = '';
+        titleError.textContent = '';
+        priceError.textContent = '';
+        brandError.textContent = '';
+        publisherError.textContent = '';
+        artistError.textContent = '';
+        coverArtistError.textContent = '';
+        writerError.textContent = '';
+        inventoryAmountError.textContent = '';
+
+        //get values
+        const id = form.id.value;
+        const title = form.title.value;
+        const price = form.price.value;
+        const brand = form.brand.value;
+        const publisher = form.publisher.value;
+        const artist = form.artist.value;
+        const coverArtist = form.coverArtist.value;
+        const writer = form.writer.value;
+        const inventoryAmount = form.inventoryAmount.value;
+
+        try {
+            const res = await fetch('/adminTool', {
+                method: 'POST',
+                body: JSON.stringify({id, title, price, brand, publisher, artist, coverArtist, writer, inventoryAmount}),
+                headers: { 'Content-Type': 'application/json'}
+            });
+            const data = await res.json();
+            console.log(data);
+            if (data.errors) {
+                idError.textContent = data.id.error;
+                titleError.textContent = data.title.error;
+                priceError.textContent = data.price.error;
+                brandError.textContent = data.brand.error;
+                publisherError.textContent = data.publisher.error;
+                artistError.textContent = data.artist.error;
+                coverArtistError.textContent = data.coverArtist.error;
+                writerError.textContent = data.writer.error;
+                inventoryAmountError.textContent = data.inventoryAmount.error;
+            }
+            if (data.title) {
+                location.assign('/');
+            }
+        } catch (err) {
+
+        }
+    })
+</script>
+
+
+<%- include('../partials/footer'); -%>

@@ -2,6 +2,155 @@
 
 <h1>Shopping Cart</h1>
 
+<div class="cart-items">
+  <% if (cartItems.length === 0) { %>
+    <p>No items in cart.</p>
+  <% } else { %>
+    <% cartItems.forEach(item => { %>
+      <div class="cart-item">
+        <h3 class="item-title"><%= item.title %></h3>
+        <p class="item-price">Price: $<%= item.price.toFixed(2) %></p>
+        <button class="remove-item-btn" data-id="<%= item.id %>">Remove</button>
+      </div>
+    <% }); %>
+  <% } %>
+</div>
 
+<button id="checkout-btn">Checkout</button>
+
+<!-- Popup window for confirmation -->
+<div id="confirmation-popup" class="popup">
+  <div class="popup-content">
+    <h2>Confirm Checkout</h2>
+    <p>Are you sure you want to proceed with the checkout?</p>
+    <button id="confirm-checkout-btn">Confirm</button>
+    <button id="cancel-checkout-btn">Cancel</button>
+  </div>
+</div>
+
+<script>
+    // Fetch user data from JWT verification
+    function getUserEmail() {
+    const token = localStorage.getItem('jwtToken');
+    const payload = token.split('.')[1];
+    const decodedPayload = atob(payload);
+    const { email } = JSON.parse(decodedPayload);
+    return email;
+  };
+
+  const userEmail = getUserEmail();
+  fetchCartItems(userEmail);
+    // Function to display cart items
+    function displayCartItems(items) {
+      const cartItemsContainer = document.querySelector('.cart-items');
+  
+      if (items.length === 0) {
+        cartItemsContainer.innerHTML = '<p>No items in cart.</p>';
+        return;
+      }
+  
+      items.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+  
+        const title = document.createElement('h3');
+        title.className = 'item-title';
+        title.textContent = item.title;
+        cartItem.appendChild(title);
+  
+        const price = document.createElement('p');
+        price.className = 'item-price';
+        price.textContent = `Price: $${item.price.toFixed(2)}`;
+        cartItem.appendChild(price);
+  
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-item-btn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.setAttribute('data-id', item.id);
+        removeBtn.addEventListener('click', removeItemFromCart);
+        cartItem.appendChild(removeBtn);
+  
+        cartItemsContainer.appendChild(cartItem);
+      });
+    }
+  
+    // Function to remove an item from the cart
+    function removeItemFromCart(event) {
+      const itemId = event.target.getAttribute('data-id');
+  
+      fetch(`/api/cart/${itemId}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (response.ok) {
+            fetchCartItems();
+          } else {
+            console.error('Error removing item from cart:', response.status);
+          }
+        })
+        .catch(error => console.error('Error removing item from cart:', error));
+    }
+  
+    // Function to fetch and display the cart items
+    function fetchCartItems() {
+      fetch('/api/cart')
+        .then(response => response.json())
+        .then(cartItems => {
+          displayCartItems(cartItems);
+        })
+        .catch(error => console.error('Error fetching cart items:', error));
+  }
+
+  // Function to handle the checkout process
+  function handleCheckout() {
+    const confirmationPopup = document.getElementById('confirmation-popup');
+    confirmationPopup.style.display = 'block';
+
+    const confirmCheckoutBtn = document.getElementById('confirm-checkout-btn');
+    confirmCheckoutBtn.addEventListener('click', completeCheckout);
+
+    const cancelCheckoutBtn = document.getElementById('cancel-checkout-btn');
+    cancelCheckoutBtn.addEventListener('click', () => {
+      confirmationPopup.style.display = 'none';
+    });
+  }
+
+  function completeCheckout() {
+    fetch('/api/cart', {
+      method: 'PUT'
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.error('Error completing checkout:', response.status);
+        }
+      })
+      .then(orderDetails => {
+        console.log('Checkout completed:', orderDetails);
+        // Redirect to the order confirmation page or perform other actions
+        // For example, you can clear the displayed cart items
+        clearCartItems();
+      })
+      .catch(error => console.error('Error completing checkout:', error));
+  }
+
+  // Function to clear the displayed cart items
+  function clearCartItems() {
+    const cartItemsContainer = document.querySelector('.cart-items');
+    cartItemsContainer.innerHTML = '';
+  }
+
+  // Event listener for checkout button
+  const checkoutBtn = document.getElementById('checkout-btn');
+  checkoutBtn.addEventListener('click', handleCheckout);
+
+  // Fetch and display cart items when the page loads
+  fetchCartItems();
+</script>
+
+  
 
 <%- include('partials/footer'); -%>
+
+

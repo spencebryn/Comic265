@@ -1,0 +1,114 @@
+<%- include('partials/header'); -%>
+
+<div class="container">
+  <h1>Comic Book Shop</h1>
+  <div class="comic-details">
+    <h2 class="comic-title"></h2>
+    <p class="comic-price"></p>
+    <p class="comic-brand"></p>
+    <p class="comic-publisher"></p>
+    <p class="comic-artist"></p>
+    <p class="comic-cover-artist"></p>
+    <p class="comic-writer"></p>
+    <button class="add-to-cart">Add to Cart</button>
+  </div>
+</div>
+
+<script>
+  // Fetch the comic details using the provided ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const comicId = urlParams.get('id');
+
+  fetch(`../data/comics.json`)
+    .then(response => response.json())
+    .then(comics => displayComicDetails(comics))
+    .catch(error => console.error('Error fetching comic data:', error));
+
+  // Function to display comic details
+  function displayComicDetails(comics) {
+    const comicDetails = document.querySelector('.comic-details');
+
+    if (!Array.isArray(comics)) {
+      console.error('Comics is not an array:', comics);
+      return;
+    }
+
+    const comic = comics.find(comic => comic.id === comicId);
+
+    if (!comic) {
+      console.error('Comic not found:', comicId);
+      return;
+    }
+
+    const title = comicDetails.querySelector('.comic-title');
+    title.textContent = comic.title;
+
+    const price = comicDetails.querySelector('.comic-price');
+    price.textContent = `Price: $${Number(comic.price).toFixed(2)}`;
+
+    const brand = comicDetails.querySelector('.comic-brand');
+    brand.textContent = `Brand: ${comic.brand}`;
+
+    const publisher = comicDetails.querySelector('.comic-publisher');
+    publisher.textContent = `Publisher: ${comic.publisher}`;
+
+    const artist = comicDetails.querySelector('.comic-artist');
+    artist.textContent = `Artist: ${comic.artist}`;
+
+    const coverArtist = comicDetails.querySelector('.comic-cover-artist');
+    coverArtist.textContent = `Cover Artist: ${comic.coverArtist}`;
+
+    const writer = comicDetails.querySelector('.comic-writer');
+    writer.textContent = `Writer: ${comic.writer}`;
+
+    const addToCartBtn = comicDetails.querySelector('.add-to-cart');
+    addToCartBtn.addEventListener('click', () => {
+      const token = localStorage.getItem('jwt');
+      const payload = token.split('.')[1];
+      const decodedPayload = atob(payload);
+      const { email } = JSON.parse(decodedPayload);
+      addToCart(comic.id, email);
+    });
+  }
+
+  // Function to add the comic to the cart
+  function addToCart(comicId, userEmail) {
+    const cartItem = {
+      id: comicId,
+      title: comic.title,
+      price: comic.price,
+      brand: comic.brand,
+      publisher: comic.publisher,
+      artist: comic.artist,
+      coverArtist: comic.coverArtist,
+      writer: comic.writer,
+      quantityInCart: 1
+    };
+
+    const cartData = {
+      [userEmail]: [
+        {
+          userComics: [cartItem]
+        }
+      ]
+    };
+
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(cartData)
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Comic added to cart successfully');
+        } else {
+          console.error('Error adding comic to cart:', response.status);
+        }
+      })
+      .catch(error => console.error('Error adding comic to cart:', error));
+  }
+</script>
+
+<%- include('partials/footer'); -%>

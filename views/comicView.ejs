@@ -1,7 +1,62 @@
 <%- include('partials/header'); -%>
 
-<h1>Comic View</h1>
+<div class="container">
+  <h1>Comic Book Shop</h1>
+  <div class="comic-list">
+    
+  </div>
+</div>
 
+<script>
+// Fetch the comics.json file
+fetch('../data/comics.json')
+  .then(response => response.json())
+  .then(comics => generateComicCards(comics))
+  .catch(error => console.error('Error fetching comic data:', error));
 
+// Function to generate dynamic comic cards
+function generateComicCards(comics) {
+  const comicList = document.querySelector('.comic-list');
+
+  if (!Array.isArray(comics)) {
+    console.error('Comics is not an array:', comics);
+    return;
+  }
+
+  comics.forEach(comic => {
+    const comicCard = document.createElement('div');
+    comicCard.className = 'comic-card';
+
+    const title = document.createElement('h2');
+    title.className = 'comic-title';
+    title.textContent = comic.title;
+    comicCard.appendChild(title);
+
+    const price = document.createElement('p');
+    price.className = 'comic-price';
+    price.textContent = `Price: $${Number(comic.price).toFixed(2)}`;
+    comicCard.appendChild(price);
+
+    const brand = document.createElement('p');
+    brand.className = 'comic-brand';
+    brand.textContent = `Brand: ${comic.brand}`;
+    comicCard.appendChild(brand);
+
+    // Create the details button
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'comic-details';
+    detailsBtn.textContent = 'Details';
+    // Set the click event listener
+    detailsBtn.addEventListener('click', () => {
+      // Redirect to the details page for the comic
+      window.location.href = `/comicDetails?id=${comic.id}`;
+    });
+    comicCard.appendChild(detailsBtn);
+
+    comicList.appendChild(comicCard);
+  });
+}
+
+</script>
 
 <%- include('partials/footer'); -%>

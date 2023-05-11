@@ -1,0 +1,35 @@
+{"test@email.com":[
+    {
+        "userComics":[
+            {
+                "id":"0",
+                "title":"Amazing Spider-Man #24 (2022)",
+                "price":3.99,
+                "brand":"Spider-Man","publisher":"Marvel",
+                "artist":"John Romita Jr.","coverArtist":"John Romita Jr.",
+                "writer":"Zeb Wells",
+                "quantityInCart":1
+            },
+            {
+                "id":"1",
+                "title":"Batman Superman Worlds Finest #14",
+                "price":4.99,
+                "brand":"Batman",
+                "publisher":"DC",
+                "artist":"Dan Mora",
+                "coverArtist":"Serg Acuna",
+                "writer":"Mark Waid",
+                "quantityInCart":1
+            },
+            {
+                "id":"2",
+                "title":"Carnage #12 (2022)",
+                "price":3.99,"brand":"Spider-Man",
+                "publisher":"Marvel",
+                "artist":"Francesco Manna",
+                "coverArtist":"Kendrick Lim",
+                "writer":"Alex Paknadel",
+                "quantityInCart":1}
+        ]
+    }
+]}
