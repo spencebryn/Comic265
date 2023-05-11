@@ -23,9 +23,14 @@ app.set('view engine', 'ejs');
 
 // database connection
 const dbURI = "mongodb+srv://spencebryn:ComicBook0@comicbook0.cvyq6cv.mongodb.net/allUser";
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
-  .then((result) => app.listen(3000))
+const port = process.env.PORT || 3000;
+
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+  .then((result) => app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+  }))
   .catch((err) => console.log(err));
+
 
 // routes
 app.get('*', checkUser);
